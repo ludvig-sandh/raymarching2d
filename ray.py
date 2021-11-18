@@ -1,7 +1,7 @@
 import math
 from scene import *
 
-RAY_THRESHOLD = 1.0
+RAY_THRESHOLD = 1
 
 class Ray:
     def __init__(self, scene, position, angle):
@@ -13,16 +13,15 @@ class Ray:
         position = self.__get_position()
         scene = self.__get_scene()
         distances_to_objects = [obj.distance(position) for obj in scene.get_objects()]
-        return min(distances_to_objects)
+        x, y = position
+        distances_to_walls = [abs(x), abs(y), abs(x - 1000), abs(y - 1000)]
+        return min(distances_to_objects + distances_to_walls)
 
     def march(self):
         scene_size = self.__get_scene().get_size()
         step_distance = self.__step()
         while step_distance > RAY_THRESHOLD:
             step_distance = self.__step()
-            x, y = self.__get_position()
-            if max(abs(x), abs(y)) > scene_size:
-                break
         return self.__get_position()
 
     def __step(self):

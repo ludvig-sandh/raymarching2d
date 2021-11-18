@@ -16,17 +16,30 @@ class Graphics:
         self.screen = pygame.display.set_mode([self.__get_width(), self.__get_height()])
 
     # Display everything on screen
-    def display_scene(self, dots, objects, camera_position):
+    def display_scene(self, dots, objects, camera_position, is3D):
         self.__reset_screen()
-        self.__draw_dots(dots)
-        self.__draw_objects(objects)
-        self.__draw_camera(camera_position)
+        if not is3D:
+            self.__draw_dots(dots)
+            self.__draw_objects(objects)
+            self.__draw_camera(camera_position)
+        else:
+            self.__draw_projection(dots)
         pygame.display.flip()
 
     # Reset screen
     def __reset_screen(self):
         # Fill the background
         self.__get_screen().fill(BACKGROUND_COLOR)
+
+    def __draw_projection(self, dots):
+        amount = len(dots)
+        for i in range(amount):
+            x = 1000 - i / amount * self.__get_width()
+            top = 450 - 30000 / dots[i] / 2
+            bottom = 450 + 60000 / dots[i] / 2
+            c = min(200, 250 / dots[i] * 100)
+            pygame.draw.rect(self.__get_screen(), (c, c, c), (x, top, math.ceil(1000.0 / amount), bottom - top), 0, 0)
+            pygame.draw.rect(self.__get_screen(), (0, 0, 0), (x, bottom, math.ceil(1000.0 / amount), bottom), 0, 0)
 
     def __draw_dots(self, dots):
         pygame.draw.polygon(self.__get_screen(), COLOR1, dots)
